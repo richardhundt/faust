@@ -31,7 +31,6 @@ from yarl import URL
 
 from faust.exceptions import ImproperlyConfigured
 from faust.streams import current_event
-from faust.tables.objects import current_partition
 from faust.types import TP, AppT, CollectionT, EventT
 from faust.utils import platforms
 
@@ -453,15 +452,8 @@ class Store(base.SerializedStore):
             self.set_persisted_offset(tp, offset)
 
     def _set(self, key: bytes, value: Optional[bytes]) -> None:
-        partition = current_partition()
-        if partition is None:
-            # Hack: try to guess partition from key. This is needed
-            # because the asynchronous flusher task does not have
-            # an event in the context.
-            from kafka.partitioner.default import murmur2
-            partitions = self.table.partitions or self.app.conf.topic_partitions or 1
-            partition = (murmur2(key) & 0x7fffffff) % partitions
-
+        event = current_event()
+        assert event is not None
         db = self._db_for_partition(partition)
         self._key_index[key] = partition
         db.put(key, value)
