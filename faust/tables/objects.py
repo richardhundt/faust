@@ -76,7 +76,7 @@ class ChangeloggedObjectManager(Store):
         """Send changelog event to the tables changelog topic."""
         event = current_event()
         self.table._send_changelog(event, (operation, key), value)
-        self.storage[key] = self.data[key].as_stored_value()
+        self.storage[key] = value.as_stored_value()
 
     def __getitem__(self, key: Any) -> ChangeloggedObject:
         if key in self.data:
