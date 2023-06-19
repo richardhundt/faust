@@ -4,7 +4,6 @@ This is also used to store data structures such as sets/lists.
 
 """
 import abc
-import typing
 from typing import (
     Any,
     Callable,
@@ -17,7 +16,6 @@ from typing import (
     Type,
 )
 
-from contextvars import ContextVar
 from mode import Service
 
 from faust.stores.base import Store
@@ -27,23 +25,6 @@ from faust.types.stores import StoreT
 from faust.types.tables import CollectionT
 
 from .table import Table
-
-if typing.TYPE_CHECKING:  # pragma: no cover
-    _current_partition: ContextVar[Optional[int]]
-
-_current_partition = ContextVar("current_partition")
-
-
-def current_partition() -> Optional[int]:
-    """Return the partition currently being processed, or None."""
-    event = current_event()
-    if event is not None:
-        return event.message.partition
-    return _current_partition.get(None)
-
-def set_current_partition(partition: int) -> None:
-    """Set the current partition being processed."""
-    _current_partition.set(partition)
 
 
 class ChangeloggedObject:

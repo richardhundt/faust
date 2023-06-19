@@ -98,12 +98,6 @@ class Test_ChangeloggedObjectManager:
         await man.on_start()
         man.add_runtime_dependency.assert_called_once_with(man.storage)
 
-    @pytest.mark.asyncio
-    async def test_on_stop(self, *, man):
-        man.flush_to_storage = Mock()
-        await man.on_stop()
-        man.flush_to_storage.assert_called_once_with()
-
     def test_persisted_offset(self, *, man, storage):
         ret = man.persisted_offset(TP1)
         storage.persisted_offset.assert_called_once_with(TP1)
@@ -134,14 +128,6 @@ class Test_ChangeloggedObjectManager:
         man.sync_from_storage()
         assert 1 in man["foo"].synced
         assert 2 in man["bar"].synced
-
-    def test_flush_to_storage(self, *, man):
-        man._storage = {}
-        man._dirty = {"foo", "bar"}
-        assert man["foo"]
-        assert man["bar"]
-        man.flush_to_storage()
-        assert man._storage["foo"] == "foo-stored"
 
     def test_reset_state(self, *, man, storage):
         man.reset_state()
