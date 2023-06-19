@@ -454,6 +454,7 @@ class Store(base.SerializedStore):
     def _set(self, key: bytes, value: Optional[bytes]) -> None:
         event = current_event()
         assert event is not None
+        partition = event.message.partition
         db = self._db_for_partition(partition)
         self._key_index[key] = partition
         db.put(key, value)
