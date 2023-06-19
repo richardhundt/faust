@@ -54,6 +54,7 @@ class Test_ChangeloggedObjectManager:
     def man(self, *, table):
         man = ChangeloggedObjectManager(table)
         man.ValueType = ValueType
+        man.storage.__setitem__ = Mock()
         return man
 
     @pytest.fixture()
@@ -62,7 +63,7 @@ class Test_ChangeloggedObjectManager:
 
     def test_send_changelog_event(self, *, man, table, key, current_event):
         man.send_changelog_event(key, 3, "value")
-        assert key in man._dirty
+        assert man.storage.__setitem__.called_once_with(key, "value")
         table._send_changelog.assert_called_once_with(
             current_event(),
             (3, key),
