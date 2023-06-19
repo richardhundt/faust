@@ -65,7 +65,6 @@ class ChangeloggedObjectManager(Store):
     data: MutableMapping
 
     _storage: Optional[StoreT] = None
-    _dirty: Set
 
     def __init__(self, table: Table, **kwargs: Any) -> None:
         self.table = table
